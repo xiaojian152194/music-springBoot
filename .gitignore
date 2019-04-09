@@ -9,6 +9,7 @@
 .settings
 .springBeans
 .sts4-cache
+pushToCloudServer.sh
 
 ### IntelliJ IDEA ###
 .idea
