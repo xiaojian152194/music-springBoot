@@ -333,27 +333,63 @@ public class MusicController {
     }
     return response;
   }
-  @RequestMapping(value = { "get_user_musics" }, method = { RequestMethod.GET })
-  @ResponseBody
-  public ResponseRange<Music> getUserMusics(CommonParameters commonParameters, HttpServletRequest request) {
-    ResponseRange<Music> responseRange = new ResponseRange<>();
-    try {
-      MusicSearch music = new MusicSearch();
-      User user = (User) request.getSession().getAttribute(Contants.LOGIN_PROVE_FG);
-      music.setUserId(user.getId());
-      Collection<Music> musics = musicService.searchMusic(music);
-      for (Music m : musics) {
-        m.setUploadTimeString(simpleDateFormat.format(m.getUploadTime()));
-      }
-      if (musics.isEmpty()) {
-        throw new MusicException("没有数据信息！");
-      }
-      responseRange.setData(musics);
-    } catch (Exception e) {
-      responseRange.setException(e);
-    }
-    return responseRange;
+//  @RequestMapping(value = { "get_user_musics" }, method = { RequestMethod.GET })
+//  @ResponseBody
+//  public ResponseRange<Music> getUserMusics(CommonParameters commonParameters, HttpServletRequest request) {
+//    ResponseRange<Music> responseRange = new ResponseRange<>();
+//    try {
+//      MusicSearch music = new MusicSearch();
+//      if(request.getSession().getAttribute(Contants.LOGIN_PROVE_FG) != null) {
+//        User user = (User) request.getSession().getAttribute(Contants.LOGIN_PROVE_FG);
+//        music.setUserId(user.getId());
+//      } else if(request.getSession().getAttribute(Contants.LOGIN_PROVE_BG) != null){
+//        User user = (User) request.getSession().getAttribute(Contants.LOGIN_PROVE_BG);
+//        music.setUserId(user.getId());
+//      }
+//      Collection<Music> musics = musicService.searchMusic(music);
+//      for (Music m : musics) {
+//        m.setUploadTimeString(simpleDateFormat.format(m.getUploadTime()));
+//      }
+//      if (musics.isEmpty()) {
+//        throw new MusicException("没有数据信息！");
+//      }
+//      responseRange.setData(musics);
+//    } catch (Exception e) {
+//      responseRange.setException(e);
+//    }
+//    return responseRange;
+//  }
+@RequestMapping(value = { "get_user_musics" }, method = { RequestMethod.POST })
+@ResponseBody
+public ResponseRange<Music> getUserMusic(CommonParameters commonParameters, @RequestBody  MusicSearch musicSearch) {
+  if (log.isDebugEnabled()) {
+    log.debug("Staring call MusicController.get ");
+    log.debug("parameter commonParameters is : " + commonParameters);
+    log.debug("parameter musicSearch is : " + musicSearch);
   }
+  ResponseRange<Music> responseRange = new ResponseRange<>();
+  try {
+    if (musicSearch == null || musicSearch.selfIsNull()) {
+      if (commonParameters.isPageSerach()) {
+        responseRange.setData(musicService.paginationGetAllMusic(commonParameters.getPageSerachParameters()));
+      } else {
+        responseRange.setData(musicService.getAllMusic());
+      }
+    } else {
+      if (commonParameters.isPageSerach()) {
+        responseRange.setData(musicService.paginationSearchMusic(musicSearch, commonParameters.getPageSerachParameters()));
+      } else {
+        responseRange.setData(musicService.searchMusic(musicSearch));
+      }
+    }
+  } catch (Exception e) {
+    if (log.isErrorEnabled()) {
+      log.error(e.getMessage(), e);
+    }
+    responseRange.setException(e);
+  }
+  return responseRange;
+}
   @RequestMapping(value = { "upload" }, method = { RequestMethod.POST })
   @ResponseBody
   public ResponseRange<String> uploadMusic(HttpServletRequest request, CommonParameters commonParameters,
@@ -377,8 +413,13 @@ public class MusicController {
       music1.setDownloadNum(0);
       music1.setUploadIp(request.getRemoteAddr());
       music1 = FileOperateUtils.uploadMusic(music, music1);
-      User user = (User) request.getSession().getAttribute(Contants.LOGIN_PROVE_FG);
-      music1.setUserId(user.getId());
+      if(request.getSession().getAttribute(Contants.LOGIN_PROVE_FG) != null) {
+        User user = (User) request.getSession().getAttribute(Contants.LOGIN_PROVE_FG);
+        music1.setUserId(user.getId());
+      } else if(request.getSession().getAttribute(Contants.LOGIN_PROVE_BG) != null){
+        User user = (User) request.getSession().getAttribute(Contants.LOGIN_PROVE_BG);
+        music1.setUserId(user.getId());
+      }
       musicService.saveMusic(music1);
       responseRange.setData("上传成功！！");
     } catch (Exception e) {

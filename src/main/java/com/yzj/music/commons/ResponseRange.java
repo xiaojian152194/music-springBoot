@@ -14,6 +14,7 @@ public final class ResponseRange<T extends Serializable> implements Serializable
   private boolean successResponse = true;
   private String message = "ok";
   private String requestId;
+  private String roles;
   private boolean isPageRange = false;
   private java.util.Collection<T> datas;
   private java.util.Collection<T> children;
@@ -65,6 +66,10 @@ public final class ResponseRange<T extends Serializable> implements Serializable
   public final void setRequestId(String requestId) {
     this.requestId = requestId;
   }
+
+  public final String getRoles() { return roles; }
+
+  public final void setRoles(String roles) { this.roles = roles; }
 
   public final java.util.Collection<T> getDatas() {
     return datas;

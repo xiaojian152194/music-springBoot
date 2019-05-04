@@ -124,16 +124,6 @@ public interface IUserPersistent {
    * @throws MusicException 运行出错会抛出该异常
    */
   public Collection<User> searchUser(final UserSearch userSearch) throws MusicException;
-  /**
-   * 根据条件进行查询数据库 P_CLOUD_MUSIC_USER 表的记录。
-   * 当查询条件对象当中的属性不为空将按该条件有效。
-   *
-   * @param user
-   *            查询条件
-   * @return 返回所有查询到的对象集合
-   * @throws MusicException 运行出错会抛出该异常
-   */
-  public Collection<User> searchUser1(final User user) throws MusicException;
 
   /**
    * 根据条件进行，分页查询数据库 P_CLOUD_MUSIC_USER 表的记录。

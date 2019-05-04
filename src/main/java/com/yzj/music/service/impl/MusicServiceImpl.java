@@ -13,8 +13,12 @@ import com.yzj.music.entity.Music;
 import com.yzj.music.commons.PageRange;
 import com.yzj.music.commons.PageSerachParameters;
 import com.yzj.music.entity.User;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import com.yzj.music.pojo.search.UserSearch;
+
+import java.util.List;
 import java.util.UUID;
 import com.yzj.music.pojo.search.MusicSearch;
 
@@ -54,6 +58,12 @@ public class MusicServiceImpl implements IMusicService {
     try {
       if (user == null || user.selfIsNull()) {
         throw new java.lang.IllegalArgumentException("user不能为空。");
+      }
+      UserSearch searchUser = new UserSearch();
+      searchUser.setUsername(user.getUsername());
+      List<User> users = new ArrayList<>(searchUser(searchUser));
+      if (!users.isEmpty()) {
+        throw new MusicException(user.getUsername() + " 已存在 ");
       }
       user.clearPrimaryKeyValue();
       if (user.getId() == null || user.getId().trim().length() < 1) {
@@ -349,24 +359,6 @@ public class MusicServiceImpl implements IMusicService {
     }
     try {
       return userPersistent.searchUser(userSearch);
-    } catch (Exception e) {
-      if (log.isErrorEnabled()) {
-        log.error(e.getMessage(), e);
-      }
-      throw new MusicException(" 错误:" + e.getMessage() , e);
-    }
-  }
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Collection<User> searchUser1(final User user) throws MusicException {
-    if (log.isDebugEnabled()) {
-      log.debug("Staring call MusicService.searchUser ");
-      log.debug("parameter userSearch is : " + user);
-    }
-    try {
-      return userPersistent.searchUser1(user);
     } catch (Exception e) {
       if (log.isErrorEnabled()) {
         log.error(e.getMessage(), e);

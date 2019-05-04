@@ -31,6 +31,8 @@ public final class UserSearch implements Serializable {
 
   protected Long createDate; // eq创建时间的参数值
 
+  protected java.lang.String likeUsername; // like图书名的参数值
+
   /**
    * 返回用户对象的eq用户名的参数值的值。
    * @return 用户对象的eq用户名的参数值的值
@@ -157,6 +159,13 @@ public final class UserSearch implements Serializable {
     this.createDate = createDate;
   }
 
+  public final String getLikeUsername() {
+    return likeUsername;
+  }
+
+  public final void setLikeUsername(String likeUsername) {
+    this.likeUsername = likeUsername;
+  }
 
   /**
    * 判断当前用户对象本身是否为空，只要对象的属性全部为null是返回true，否则返回 false。
@@ -170,6 +179,7 @@ public final class UserSearch implements Serializable {
     if(this.sex != null ) { return false; }
     if(this.avatarPath != null ) { return false; }
     if(this.createDate != null ) { return false; }
+    if(this.likeUsername != null ) { return false; }
     return true;
   }
 

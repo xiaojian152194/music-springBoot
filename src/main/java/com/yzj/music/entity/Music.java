@@ -35,6 +35,9 @@ public class Music implements java.io.Serializable {
 
   protected String userId; // 所属用户ID
 
+  // 虚拟列
+  protected java.lang.String userUsername; // 用户名
+
   /**
    * 返回歌曲信息对象的歌曲编号的值。
    * @return 歌曲信息对象的歌曲编号的值
@@ -215,7 +218,13 @@ public class Music implements java.io.Serializable {
     this.userId = userId;
   }
 
+  public final String getUserUsername() {
+    return userUsername;
+  }
 
+  public final void setUserUsername(String userUsername) {
+    this.userUsername = userUsername;
+  }
 
   @Override
   public String toString() {

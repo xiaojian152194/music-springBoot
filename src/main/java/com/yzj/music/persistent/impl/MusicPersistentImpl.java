@@ -45,8 +45,13 @@ public class MusicPersistentImpl extends com.yzj.music.persistent.impl.BasePersi
   public static final String COLUMN_UPLOAD_TIME = "UPLOAD_TIME";
   public static final String COLUMN_UPLOAD_IP = "UPLOAD_IP";
   public static final String COLUMN_USER_ID = "USER_ID";
+  public static final String VIRTUAL_COLUMN_USER_USERNAME = new StringBuilder("(SELECT ").append(UserPersistentImpl.COLUMN_USERNAME)
+          .append(" FROM ").append(UserPersistentImpl.TABLE_NAME).append(" AS ").append(UserPersistentImpl.TABLE_ALIAS)
+          .append(" WHERE ").append(UserPersistentImpl.TABLE_ALIAS).append('.').append(UserPersistentImpl.COLUMN_ID)
+          .append(" = ").append(TABLE_ALIAS).append('.').append(COLUMN_USER_ID).append(") AS ").append("USER_USERNAME").toString();
 
   public static final LinkedHashSet<String> COLUMNS = new LinkedHashSet<>();
+  public static final LinkedHashSet<String> VIRTUAL_COLUMNS = new LinkedHashSet<>();
   public static final LinkedHashSet<String> PRIMARY_KEY = new LinkedHashSet<>();
   public static final LinkedHashMap<String, String> COLUMNS_PARAMETER = new LinkedHashMap<>();
 
@@ -70,6 +75,7 @@ public class MusicPersistentImpl extends com.yzj.music.persistent.impl.BasePersi
     COLUMNS.add(COLUMN_UPLOAD_TIME);
     COLUMNS.add(COLUMN_UPLOAD_IP);
     COLUMNS.add(COLUMN_USER_ID);
+    VIRTUAL_COLUMNS.add(VIRTUAL_COLUMN_USER_USERNAME) ;
 
 
     COLUMNS_PARAMETER.put(COLUMN_ID , "id");
@@ -85,12 +91,14 @@ public class MusicPersistentImpl extends com.yzj.music.persistent.impl.BasePersi
 
     PRIMARY_KEY.add(COLUMN_ID);
 
+    NOT_INSERTABLE_COLUMNS.addAll(VIRTUAL_COLUMNS);
+    NOT_UPDATABLE_COLUMNS.addAll(VIRTUAL_COLUMNS);
     KEY_SEARCH_COLUMNS.add(COLUMN_ID);
     KEY_SEARCH_COLUMNS.add(COLUMN_MUSIC_NAME);
     INSERT_SQL = generateInsertSql(TABLE_NAME, COLUMNS, COLUMNS_PARAMETER, NOT_INSERTABLE_COLUMNS);
     UPDATE_SQL = generateUpdateSql(TABLE_NAME, COLUMNS, COLUMNS_PARAMETER, PRIMARY_KEY, NOT_UPDATABLE_COLUMNS);
     DELETE_SQL_BY_PRIMARY_KEY = generateDeleteSql(TABLE_NAME, COLUMNS_PARAMETER, PRIMARY_KEY);
-    SELECT_BASE_SQL = generateBaseSelectSql(TABLE_NAME, COLUMNS, PRIMARY_KEY, TABLE_ALIAS);
+    SELECT_BASE_SQL = generateBaseSelectSql(TABLE_NAME, COLUMNS,VIRTUAL_COLUMNS, PRIMARY_KEY, TABLE_ALIAS);
     COUNT_BASE_SQL = generateBaseCountSql(TABLE_NAME, PRIMARY_KEY, TABLE_ALIAS);
   }
 
@@ -491,6 +499,10 @@ public class MusicPersistentImpl extends com.yzj.music.persistent.impl.BasePersi
     }
     if (musicSearch.getUserId() != null && musicSearch.getUserId().trim().length() > 0) {
       sql.append(" AND ").append(TABLE_ALIAS).append('.').append(COLUMN_USER_ID).append(" = :userId");
+    }
+    if (musicSearch.getLikeMusicName() != null && musicSearch.getLikeMusicName().trim().length() > 0) {
+      musicSearch.setLikeMusicName("%" + musicSearch.getLikeMusicName() + "%");
+      sql.append(" AND ").append(TABLE_ALIAS).append('.').append(COLUMN_MUSIC_NAME).append(" LIKE :likeMusicName");
     }
   }
 }

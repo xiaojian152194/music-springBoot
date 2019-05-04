@@ -391,37 +391,6 @@ public class UserPersistentImpl extends com.yzj.music.persistent.impl.BasePersis
       throw new MusicException(" 错误:" + e.getMessage() , e);
     }
   }
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Collection<User> searchUser1(final User user) throws MusicException {
-    if (log.isDebugEnabled()) {
-      log.debug("Staring call UserPersistent.user ");
-      log.debug("parameter userSearch is : " + user);
-    }
-    try {
-      StringBuilder sql = new StringBuilder(SELECT_BASE_SQL);
-      if (user != null){
-        buildObjectValueIsNotNullOfSql1(sql, user);
-      }
-      if (SecurityContext.getOperateInfo() != null && OPERATE_TARGET.equals(SecurityContext.getOperateInfo().getOperateTarget())){
-        if (SecurityContext.getOperateInfo().getSearchKey() != null && !SecurityContext.getOperateInfo().getSearchKey().trim().isEmpty()) {
-          sql.append(" AND ").append(generateKeySearchWhereSql(KEY_SEARCH_COLUMNS, TABLE_ALIAS));
-          MapSqlParameterSource paramSource = getMapSqlParameterSource(new BeanPropertySqlParameterSource(user));
-          paramSource.addValue(SEARCH_KEY_PARAMETER, getLikeValue(SecurityContext.getOperateInfo().getSearchKey().trim()));
-          appendOrderBy(sql);
-          return this.namedParameterJdbcTemplate.query(sql.toString(), paramSource, BeanPropertyRowMapper.newInstance(User.class));
-        }
-      }
-      appendOrderBy(sql);
-      return this.namedParameterJdbcTemplate.query(sql.toString(), new BeanPropertySqlParameterSource(user), BeanPropertyRowMapper.newInstance(User.class));
-    } catch (org.springframework.dao.DataAccessException e) {
-      throw new MusicException(" 数据库错误:" + e.getMessage() , e);
-    } catch (Exception e) {
-      throw new MusicException(" 错误:" + e.getMessage() , e);
-    }
-  }
 
   /**
    * {@inheritDoc}
@@ -518,28 +487,9 @@ public class UserPersistentImpl extends com.yzj.music.persistent.impl.BasePersis
     if (userSearch.getCreateDate() != null) {
       sql.append(" AND ").append(TABLE_ALIAS).append('.').append(COLUMN_CREATE_DATE).append(" = :createDate");
     }
-  }
-  private final void buildObjectValueIsNotNullOfSql1(StringBuilder sql, User user) {
-    if (user.getUsername() != null && user.getUsername().trim().length() > 0) {
-      sql.append(" AND ").append(TABLE_ALIAS).append('.').append(COLUMN_USERNAME).append(" = :username");
-    }
-    if (user.getNickname() != null && user.getNickname().trim().length() > 0) {
-      sql.append(" AND ").append(TABLE_ALIAS).append('.').append(COLUMN_NICKNAME).append(" = :nickname");
-    }
-    if (user.getPassword() != null && user.getPassword().trim().length() > 0) {
-      sql.append(" AND ").append(TABLE_ALIAS).append('.').append(COLUMN_PASSWORD).append(" = :password");
-    }
-    if (user.getHaveAuthority() != null && user.getHaveAuthority().trim().length() > 0) {
-      sql.append(" AND ").append(TABLE_ALIAS).append('.').append(COLUMN_HAVE_AUTHORITY).append(" = :haveAuthority");
-    }
-    if (user.getSex() != null && user.getSex().trim().length() > 0) {
-      sql.append(" AND ").append(TABLE_ALIAS).append('.').append(COLUMN_SEX).append(" = :sex");
-    }
-    if (user.getAvatarPath() != null && user.getAvatarPath().trim().length() > 0) {
-      sql.append(" AND ").append(TABLE_ALIAS).append('.').append(COLUMN_AVATAR_PATH).append(" = :avatarPath");
-    }
-    if (user.getCreateDate() != null) {
-      sql.append(" AND ").append(TABLE_ALIAS).append('.').append(COLUMN_CREATE_DATE).append(" = :createDate");
+    if (userSearch.getLikeUsername() != null && userSearch.getLikeUsername().trim().length() > 0) {
+      userSearch.setLikeUsername("%" + userSearch.getLikeUsername() + "%");
+      sql.append(" AND ").append(TABLE_ALIAS).append('.').append(COLUMN_USERNAME).append(" LIKE :likeUsername");
     }
   }
 }

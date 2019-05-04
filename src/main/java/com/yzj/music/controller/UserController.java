@@ -50,6 +50,7 @@ public class UserController {
       if (user == null || user.selfIsNull()) {
         throw new java.lang.IllegalArgumentException("user不能为空。");
       }
+      user.setCreateDate(System.currentTimeMillis());
       musicService.saveUser(user);
     } catch (Exception e) {
       if (log.isErrorEnabled()) {
@@ -96,6 +97,7 @@ public class UserController {
       if (user == null || user.selfIsNull()) {
         throw new java.lang.IllegalArgumentException("user不能为空。");
       }
+      user.setCreateDate(System.currentTimeMillis());
       musicService.updateUser(user);
     } catch (Exception e) {
       if (log.isErrorEnabled()) {
@@ -201,6 +203,38 @@ public class UserController {
   @RequestMapping(method = { RequestMethod.GET })
   @ResponseBody
   public ResponseRange<User> get(CommonParameters commonParameters, UserSearch userSearch) {
+    if (log.isDebugEnabled()) {
+      log.debug("Staring call UserController.get ");
+      log.debug("parameter commonParameters is : " + commonParameters);
+      log.debug("parameter userSearch is : " + userSearch);
+    }
+    ResponseRange<User> responseRange = new ResponseRange<>();
+    try {
+      if (userSearch == null || userSearch.selfIsNull()) {
+        if (commonParameters.isPageSerach()) {
+          responseRange.setData(musicService.paginationGetAllUser(commonParameters.getPageSerachParameters()));
+        } else {
+          responseRange.setData(musicService.getAllUser());
+        }
+      } else {
+        if (commonParameters.isPageSerach()) {
+          responseRange.setData(musicService.paginationSearchUser(userSearch, commonParameters.getPageSerachParameters()));
+        } else {
+          responseRange.setData(musicService.searchUser(userSearch));
+        }
+      }
+    } catch (Exception e) {
+      if (log.isErrorEnabled()) {
+        log.error(e.getMessage(), e);
+      }
+      responseRange.setException(e);
+    }
+    return responseRange;
+  }
+
+  @RequestMapping(value = { "search_user" },method = { RequestMethod.POST })
+  @ResponseBody
+  public ResponseRange<User> searchUser(CommonParameters commonParameters, @RequestBody UserSearch userSearch) {
     if (log.isDebugEnabled()) {
       log.debug("Staring call UserController.get ");
       log.debug("parameter commonParameters is : " + commonParameters);

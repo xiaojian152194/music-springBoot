@@ -21,9 +21,10 @@ public class LoginServiceImpl implements ILoginService {
      */
     @Override
     public User login(User user) throws MusicException {
-        User searchUser = new User(), success = null;
+        UserSearch searchUser = new UserSearch();
+        User success = null;
         searchUser.setUsername(user.getUsername());
-        List<User> users = new ArrayList<>(musicService.searchUser1(searchUser));
+        List<User> users = new ArrayList<>(musicService.searchUser(searchUser));
         if (users.isEmpty()) {
             throw new MusicException(" 用户名不存在 ");
         }
@@ -38,9 +39,10 @@ public class LoginServiceImpl implements ILoginService {
      */
     @Override
     public User register(User user) throws MusicException {
-        User searchUser = new User(), success = null;
+        UserSearch searchUser = new UserSearch();
+        User success = null;
         searchUser.setUsername(user.getUsername());
-        List<User> users = new ArrayList<>(musicService.searchUser1(searchUser));
+        List<User> users = new ArrayList<>(musicService.searchUser(searchUser));
         if (!users.isEmpty()) {
             throw new MusicException(user.getUsername() + " 已被注册 ");
         }

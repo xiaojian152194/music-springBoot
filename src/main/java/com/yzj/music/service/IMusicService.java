@@ -133,16 +133,6 @@ public interface IMusicService {
   public Collection<User> searchUser(final UserSearch userSearch) throws MusicException;
 
   /**
-   * 根据条件进行查询用户对象。
-   * 当查询条件对象当中的属性不为空将按该条件进行eq查询。
-   *
-   * @param user
-   *            查询条件
-   * @return 查询到的对象集合如果没有查到返回null或者空集合
-   * @throws MusicException 运行出错会抛出该异常
-   */
-  public Collection<User> searchUser1(final User user) throws MusicException;
-  /**
    * 根据条件进行，分页查询用户对象。
    * 当查询条件对象当中的属性不为空将按该条件进行eq查询。
    *

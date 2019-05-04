@@ -33,6 +33,8 @@ public final class MusicSearch implements Serializable {
 
   protected String userId; // eq所属用户ID的参数值
 
+  protected java.lang.String likeMusicName; // like图书名的参数值
+
   /**
    * 返回歌曲信息对象的eq歌曲名称,上传时的歌曲名称,也是显示的歌曲名称的参数值的值。
    * @return 歌曲信息对象的eq歌曲名称,上传时的歌曲名称,也是显示的歌曲名称的参数值的值
@@ -178,10 +180,20 @@ public final class MusicSearch implements Serializable {
   }
 
 
+  public final String getLikeMusicName() {
+    return likeMusicName;
+  }
+
+  public final void setLikeMusicName(String likeMusicName) {
+    this.likeMusicName = likeMusicName;
+  }
+
   /**
    * 判断当前歌曲信息对象本身是否为空，只要对象的属性全部为null是返回true，否则返回 false。
    * @return true代表当前对象所有属性全部为空，，false代表当前对象并非所有属性都为空
    */
+
+
   public boolean selfIsNull() {
     if(this.musicName != null ) { return false; }
     if(this.musicRealName != null ) { return false; }
@@ -191,6 +203,7 @@ public final class MusicSearch implements Serializable {
     if(this.uploadTime != null ) { return false; }
     if(this.uploadIp != null ) { return false; }
     if(this.userId != null ) { return false; }
+    if(this.likeMusicName != null ) { return false; }
     return true;
   }
 
